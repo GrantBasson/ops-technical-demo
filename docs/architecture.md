@@ -74,28 +74,8 @@ Lookup tables are used for controlled values so that codes such as payment strea
 
 ## 6. How To Rebuild The Database
 
-Create the demo database:
+Run the schema script against the local `ops_demo` database using the PostgreSQL client installed at `C:\pg16\pgsql\bin\psql.exe`:
 
 ```powershell
-createdb ops_demo
-```
-
-Run the schema script:
-
-```powershell
-psql -d ops_demo -f sql/schema.sql
-```
-
-Load the sample data:
-
-```powershell
-psql -d ops_demo -f sql/sample_data.sql
-```
-
-These commands assume PostgreSQL is installed and available on the system `PATH`.
-
-If PostgreSQL is not on the system `PATH`, use the full path to `psql.exe`. For example, on the local Windows development machine used while building this demo:
-
-```powershell
-& "C:\pg16\pgsql\bin\psql.exe" -h 127.0.0.1 -p 5432 -U postgres -d ops_demo -f .\sql\schema.sql
+C:\pg16\pgsql\bin\psql.exe -d ops_demo -f sql/schema.sql
 ```
