@@ -18,7 +18,7 @@ INSERT INTO payment_streams (
 ) VALUES
     ('EFT_DEBIT', 'EFT Debit'),
     ('ACOL', 'Authenticated Collections'),
-    ('CARD', 'Card Collection');
+    ('POS', 'POS Collection');
 
 -- Payment frequencies
 INSERT INTO payment_frequencies (
@@ -26,7 +26,8 @@ INSERT INTO payment_frequencies (
     frequency_name
 ) VALUES
     ('MONTHLY', 'Monthly'),
-    ('WEEKLY', 'Weekly');
+    ('WEEKLY', 'Weekly'),
+    ('ONCE_OFF', 'Once Off');
 
 -- Mandate statuses
 INSERT INTO mandate_statuses (
@@ -63,15 +64,15 @@ INSERT INTO mandates (
 ) VALUES
     ('CL-0001', 'MAN-2026-0001', 'EFT_DEBIT', 'MONTHLY', 'ACTIVE', '2026-01-01', NULL),
     ('CL-0002', 'MAN-2026-0002', 'ACOL', 'MONTHLY', 'ACTIVE', '2026-02-01', NULL),
-    ('CL-0003', 'MAN-2026-0003', 'CARD', 'WEEKLY', 'SUSPENDED', '2026-03-15', NULL),
+    ('CL-0003', 'MAN-2026-0003', 'POS', 'ONCE_OFF', 'SUSPENDED', '2026-03-15', NULL),
     ('CL-0004', 'MAN-2026-0004', 'EFT_DEBIT', 'MONTHLY', 'CANCELLED', '2026-01-15', '2026-08-31');
 
--- Installments
-INSERT INTO installments (
+-- Instalments
+INSERT INTO instalments (
     mandate_reference,
     due_date,
     amount,
-    installment_status
+    instalment_status
 ) VALUES
     ('MAN-2026-0001', '2026-07-25', 950.00, 'PAID'),
     ('MAN-2026-0001', '2026-08-25', 950.00, 'FAILED'),
@@ -82,7 +83,7 @@ INSERT INTO installments (
 
 -- Presentments
 INSERT INTO presentments (
-    installment_id,
+    instalment_id,
     presentment_reference,
     amount,
     status_code,
@@ -90,8 +91,8 @@ INSERT INTO presentments (
 ) VALUES
     (
         (
-            SELECT installment_id
-            FROM installments
+            SELECT instalment_id
+            FROM instalments
             WHERE mandate_reference = 'MAN-2026-0001'
               AND due_date = '2026-07-25'
         ),
@@ -102,8 +103,8 @@ INSERT INTO presentments (
     ),
     (
         (
-            SELECT installment_id
-            FROM installments
+            SELECT instalment_id
+            FROM instalments
             WHERE mandate_reference = 'MAN-2026-0001'
               AND due_date = '2026-08-25'
         ),
@@ -114,8 +115,8 @@ INSERT INTO presentments (
     ),
     (
         (
-            SELECT installment_id
-            FROM installments
+            SELECT instalment_id
+            FROM instalments
             WHERE mandate_reference = 'MAN-2026-0001'
               AND due_date = '2026-08-25'
         ),
@@ -126,8 +127,8 @@ INSERT INTO presentments (
     ),
     (
         (
-            SELECT installment_id
-            FROM installments
+            SELECT instalment_id
+            FROM instalments
             WHERE mandate_reference = 'MAN-2026-0002'
               AND due_date = '2026-08-01'
         ),
@@ -138,8 +139,8 @@ INSERT INTO presentments (
     ),
     (
         (
-            SELECT installment_id
-            FROM installments
+            SELECT instalment_id
+            FROM instalments
             WHERE mandate_reference = 'MAN-2026-0002'
               AND due_date = '2026-09-01'
         ),
@@ -150,8 +151,8 @@ INSERT INTO presentments (
     ),
     (
         (
-            SELECT installment_id
-            FROM installments
+            SELECT instalment_id
+            FROM instalments
             WHERE mandate_reference = 'MAN-2026-0003'
               AND due_date = '2026-08-07'
         ),
@@ -162,8 +163,8 @@ INSERT INTO presentments (
     ),
     (
         (
-            SELECT installment_id
-            FROM installments
+            SELECT instalment_id
+            FROM instalments
             WHERE mandate_reference = 'MAN-2026-0004'
               AND due_date = '2026-08-15'
         ),
@@ -174,8 +175,8 @@ INSERT INTO presentments (
     ),
     (
         (
-            SELECT installment_id
-            FROM installments
+            SELECT instalment_id
+            FROM instalments
             WHERE mandate_reference = 'MAN-2026-0004'
               AND due_date = '2026-08-15'
         ),
