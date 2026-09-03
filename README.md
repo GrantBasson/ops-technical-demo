@@ -2,7 +2,7 @@
 
 Private draft for an operations technical demonstration.
 
-The intention of this repository is to demonstrate technical understanding and competence in operations-related tasks within a payments environment. It includes both working code and screenshots demonstrating live interactions with relevant software, data, and simulated real-life queries.
+The intention of this repository is to demonstrate technical understanding and competence in operations-related tasks within a payments environment. It includes working code, documentation, and screenshots demonstrating live interactions with relevant software, data, and simulated real-life queries.
 
 The planned repository structure is:
 
