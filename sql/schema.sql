@@ -47,7 +47,7 @@ CREATE TABLE presentment_status_codes (
 --create mandates table
 CREATE TABLE mandates (
     mandate_id SERIAL PRIMARY KEY,
-    client_number TEXT NOT NULL REFERENCES clients(client_number),
+    client_id INTEGER NOT NULL REFERENCES clients(client_id),
     mandate_reference TEXT NOT NULL UNIQUE,
     payment_stream_code TEXT NOT NULL REFERENCES payment_streams(payment_stream_code),
     frequency_code TEXT NOT NULL REFERENCES payment_frequencies(frequency_code),
@@ -60,16 +60,19 @@ CREATE TABLE mandates (
 --create instalments table
 CREATE TABLE instalments (
     instalment_id SERIAL PRIMARY KEY,
-    mandate_reference TEXT NOT NULL REFERENCES mandates(mandate_reference),
+    instalment_number INTEGER NOT NULL,
+    mandate_id INTEGER NOT NULL REFERENCES mandates(mandate_id),
     due_date DATE NOT NULL,
     amount NUMERIC(10, 2) NOT NULL,
-    instalment_status TEXT NOT NULL
+    instalment_status TEXT NOT NULL,
+    UNIQUE (mandate_id, instalment_number)
 );
 
 --create presentments table
 CREATE TABLE presentments (
     presentment_id SERIAL PRIMARY KEY,
     instalment_id INTEGER NOT NULL REFERENCES instalments(instalment_id),
+    mandate_id INTEGER NOT NULL REFERENCES mandates(mandate_id),
     presentment_reference TEXT NOT NULL UNIQUE,
     amount NUMERIC(10, 2) NOT NULL,
     status_code TEXT NOT NULL REFERENCES presentment_status_codes(status_code),
