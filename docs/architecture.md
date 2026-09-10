@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-This project is a small PostgreSQL demo for payments and operations troubleshooting. It is intended for practising database setup, reading table relationships, and writing diagnostic SQL against a realistic but simple payments workflow.
+This project is a small PostgreSQL and Python demo for payments and operations troubleshooting. It is intended for practising database setup, reading table relationships, and writing diagnostic SQL against a realistic but simple payments workflow.
 
 All data used in this project is synthetic. It is not production data, customer data, or real personal information.
 
@@ -102,3 +102,19 @@ If PostgreSQL is not on the system `PATH`, use the full path to `psql.exe`. For 
 ```powershell
 & "C:\pg16\pgsql\bin\psql.exe" -h 127.0.0.1 -p 5432 -U postgres -d ops_demo -f .\sql\schema.sql
 ```
+
+## 7. Python Diagnostics and Excel Export
+
+`python/diagnostics.py` implements this flow:
+
+```text
+main -> connect_to_database -> fetch_investigations -> display_report -> export_report
+```
+
+`connect_to_database()` returns a Psycopg connection or reports an operational connection error and exits with code 1. `fetch_investigations(connection)` executes the investigation SELECT and returns dictionary rows, keyed by SQL column names and aliases. It closes its cursor after fetching. The SQL is currently embedded in the Python file rather than loaded from `sql/diagnostic_queries.sql`; changes to the investigation logic must be kept consistent in both places.
+
+`display_report(results)` prints the row count and client, mandate, amount and payment outcome, or a message when no rows match. Multiple attempts for the same client remain separate rows. `export_report(results)` uses openpyxl to create an `Investigations` worksheet and save four report columns to `investigations.xlsx` in the working directory. It exports the same fetched results without running a second query. Empty results still produce column headings.
+
+`main()` catches Psycopg database errors during fetching/reporting and exits with code 1. Its `finally` block closes the connection, including when a query or export fails. Export filesystem errors are not caught by the database handler. The main guard starts the workflow only when the file is executed directly, so importing it makes the functions available without running the report.
+
+The runner reads database records; it does not change them. Dependencies and PowerShell setup instructions are recorded in `python/requirements.txt` and the README. VM/RDP setup and additional operational diagnostics remain future work.

@@ -2,6 +2,17 @@
 
 ## 2026-09-10
 
+### Python diagnostics and Excel export
+
+- Added the Python learning-session runner with separate connection, query, display, export and main functions.
+- Returned dictionary rows with Psycopg and displayed a presentment count and readable payment investigation details.
+- Added Excel export through openpyxl to an Investigations worksheet in investigations.xlsx.
+- Added connection/query error messages with exit code 1 and connection cleanup through finally.
+- Manually exercised populated results, empty results, a nonexistent database and invalid SQL during the learning session; restored the working query and connection settings afterwards.
+- Recorded installed dependency versions and documented setup, authentication, output location, overwrite behaviour and current error-handling limits.
+
+### Earlier documentation refresh
+
 - Clarified the ongoing learning-project status and current SQL investigation workflow.
 - Separated planned Python tooling, additional diagnostics and screenshots from implemented functionality.
 - Removed instructions for the unimplemented Python runner and corrected architecture relationships to match the schema.
