@@ -1,69 +1,49 @@
-# ops-technical-demo
+# Payments Operations Technical Demo
 
-Private draft for an operations technical demonstration.
+An ongoing personal learning project connecting payments operations experience with practical PostgreSQL and SQL investigation skills. It is being developed incrementally and is not a finished application.
 
-This repository demonstrates practical operations troubleshooting in a payments environment. It contains a small PostgreSQL data model, realistic sample data, diagnostic SQL, a Python diagnostics runner, and documentation explaining how the pieces fit together.
+## Current Scope
 
-The scenario is a debit-order/payment-presentment workflow:
+- A PostgreSQL schema modelling clients, mandates, instalments and payment presentments, with lookup tables for payment streams, frequencies and statuses.
+- Synthetic sample data covering different payment and instalment outcomes.
+- An investigation query joining payment attempts to their client, mandate and instalment context, filtered to statuses marked as requiring investigation.
+- Architecture documentation and a changelog recording development progress.
 
-- Clients are loaded with identifying details.
-- Mandates define collection agreements and instalment schedules.
-- Presentments represent payment attempts submitted to a payment stream.
-- Diagnostic queries highlight common operations questions such as failed collections, duplicate references, mandate utilisation, and retry candidates.
+The scenario follows a debit-order collection workflow: a client has a mandate, the mandate has scheduled instalments, and presentments record collection attempts. The aim is to practise tracing payment outcomes through related records and interpreting their operational context.
 
-## Repository Structure
+## Implemented Files
 
 ```text
 ops-technical-demo/
 |-- README.md
-|-- python/
-|   |-- diagnostics.py
-|   |-- requirements.txt
+|-- CHANGELOG.md
 |-- sql/
 |   |-- schema.sql
 |   |-- sample_data.sql
 |   |-- diagnostic_queries.sql
 |-- docs/
-|   |-- architecture.md
-|   |-- vm-setup.md
-|   |-- troubleshooting.md
-|-- screenshots/
-    |-- rdp-session.png
-    |-- database-query.png
-    |-- python-output.png
+    |-- architecture.md
 ```
 
-## Quick Start
+## Run the Current Demo
 
-1. Create a PostgreSQL database for the demo.
+Install PostgreSQL and make its command-line tools available on your PATH. Run the following from the repository root, using your local PostgreSQL connection settings:
 
-   ```powershell
-   createdb ops_demo
-   ```
+```powershell
+createdb ops_demo
+psql -v ON_ERROR_STOP=1 -d ops_demo -f sql/schema.sql
+psql -v ON_ERROR_STOP=1 -d ops_demo -f sql/sample_data.sql
+psql -v ON_ERROR_STOP=1 -d ops_demo -f sql/diagnostic_queries.sql
+```
 
-2. Load the schema and sample data.
+Use a dedicated demo database: `schema.sql` drops and recreates the demo tables. All sample data is synthetic; this project should not be connected to production systems or real customer data.
 
-   ```powershell
-   psql -d ops_demo -f sql/schema.sql
-   psql -d ops_demo -f sql/sample_data.sql
-   ```
+See [architecture documentation](docs/architecture.md) for table relationships and a Windows executable-path example.
 
-3. Run the SQL diagnostics directly.
+## Planned Work
 
-   ```powershell
-   psql -d ops_demo -f sql/diagnostic_queries.sql
-   ```
+- Extend the diagnostic SQL with further operations investigation scenarios.
+- Add a Python diagnostics runner and its dependencies.
+- Add environment setup and troubleshooting notes, with screenshots of completed work.
 
-4. Or run the Python diagnostic script.
-
-   ```powershell
-   python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   pip install -r python/requirements.txt
-   $env:DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/ops_demo"
-   python python/diagnostics.py
-   ```
-
-## Notes
-
-This is demonstration material only. It uses synthetic data and should not be connected to production systems or real customer data.
+These items are planned and are not implemented in the current repository. The current demonstration runs directly through PostgreSQL and SQL.

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-10
+
+- Clarified the ongoing learning-project status and current SQL investigation workflow.
+- Separated planned Python tooling, additional diagnostics and screenshots from implemented functionality.
+- Removed instructions for the unimplemented Python runner and corrected architecture relationships to match the schema.
+
 ## 2026-09-09
 
 - Changed mandates to reference `clients.client_id` and instalments to reference `mandates.mandate_id`, allowing business references to change independently of relationships.

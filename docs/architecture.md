@@ -32,7 +32,7 @@ Lookup tables control valid values used by the main operational records. These i
 
 `mandates` stores collection agreements linked to clients. Each mandate has a unique `mandate_reference`, payment stream, frequency, status, and start date.
 
-`instalments` stores scheduled amounts due against mandates. Each instalment is linked to a `mandate_reference`.
+`instalments` stores scheduled amounts due against mandates. Each instalment is linked to a `mandate_id`, with an `instalment_number` unique within that mandate.
 
 `presentments` stores payment collection attempts against instalments. Each presentment has a unique `presentment_reference`, amount, status code, and submission timestamp.
 
@@ -41,9 +41,10 @@ Lookup tables control valid values used by the main operational records. These i
 The main operational chain is:
 
 ```text
-clients.client_number -> mandates.client_number
-mandates.mandate_reference -> instalments.mandate_reference
+clients.client_id -> mandates.client_id
+mandates.mandate_id -> instalments.mandate_id
 instalments.instalment_id -> presentments.instalment_id
+mandates.mandate_id -> presentments.mandate_id
 ```
 
 In plain English:
@@ -51,6 +52,8 @@ In plain English:
 - A client can have one or more mandates.
 - A mandate can have one or more instalments.
 - An instalment can have one or more presentment attempts.
+
+Presentments also reference a mandate directly. The current foreign keys check that the instalment and mandate exist, but do not enforce that both refer to the same mandate. Business references remain unique while relationships use generated IDs.
 
 The `mandates` table also uses lookup tables:
 
