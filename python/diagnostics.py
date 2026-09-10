@@ -57,7 +57,7 @@ def fetch_investigations(connection):
     cursor.close()
     return results
 
-###Format the results
+###Format and display the results
 def display_report(results):
     if results:
         print(f"\nPresentments requiring investigation: {len(results)}")
@@ -68,22 +68,7 @@ def display_report(results):
     else:
         print("No presentments require investigation.")
 
-
-def main():
-    print("Payments diagnostics")
-    connection = connect_to_database()
-    print("Connected to PostgreSQL")
-
-    try:
-        results = fetch_investigations(connection)
-        display_report(results)
-        export_report(results)
-    except psycopg.Error as error:
-        print(f"Database query failed: {error}")
-        sys.exit(1)
-    finally:
-        connection.close()
-
+###Export results to xlsx
 def export_report(results):
     workbook = Workbook()
     sheet = workbook.active
@@ -102,5 +87,22 @@ def export_report(results):
     workbook.save("investigations.xlsx")
     print("Saved investigations.xlsx")
 
+###Run the defined functions with relevant messages along the way, error where required and make sure to clean up as needed.
+def main():
+    print("Payments diagnostics")
+    connection = connect_to_database()
+    print("Connected to PostgreSQL")
+
+    try:
+        results = fetch_investigations(connection)
+        display_report(results)
+        export_report(results)
+    except psycopg.Error as error:
+        print(f"Database query failed: {error}")
+        sys.exit(1)
+    finally:
+        connection.close()
+
+###Allow this function to be called on its own or by another function.
 if __name__ == "__main__":
     main()
