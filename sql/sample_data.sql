@@ -213,3 +213,38 @@ INSERT INTO presentments (
         'DUPLICATE_REFERENCE',
         '2026-08-15 10:25:00'
     );
+
+-- Successful collections supporting the remaining completed instalments.
+-- Resolve generated IDs from mandate references and instalment numbers.
+INSERT INTO presentments (
+    instalment_id, mandate_id, presentment_reference, amount, status_code, submitted_at
+)
+SELECT i.instalment_id, i.mandate_id, v.presentment_reference,
+       i.amount, 'SUCCESS', i.due_date + TIME '08:00:00'
+FROM (VALUES
+('MAN-2026-0005', 1, 'PRES-2026-0009'),
+    ('MAN-2026-0005', 2, 'PRES-2026-0010'),
+    ('MAN-2026-0005', 3, 'PRES-2026-0011'),
+    ('MAN-2026-0006', 1, 'PRES-2026-0012'),
+    ('MAN-2026-0007', 1, 'PRES-2026-0013'),
+    ('MAN-2026-0008', 1, 'PRES-2026-0014')
+) AS v(mandate_reference, instalment_number, presentment_reference)
+JOIN mandates m ON m.mandate_reference = v.mandate_reference
+JOIN instalments i ON i.mandate_id = m.mandate_id
+                  AND i.instalment_number = v.instalment_number;
+
+-- Failed attempts for incomplete and rescheduled instalments.
+-- Rescheduled due dates are the revised dates; attempts precede those dates.
+INSERT INTO presentments (
+    instalment_id, mandate_id, presentment_reference, amount, status_code, submitted_at
+)
+SELECT i.instalment_id, i.mandate_id, v.presentment_reference,
+       i.amount, 'INSUFFICIENT_FUNDS', v.submitted_at
+FROM (VALUES
+    ('MAN-2026-0002', 3, 'PRES-2026-0015', TIMESTAMP '2026-09-01 07:30:00'),
+    ('MAN-2026-0006', 2, 'PRES-2026-0016', TIMESTAMP '2026-08-10 08:00:00'),
+    ('MAN-2026-0006', 3, 'PRES-2026-0017', TIMESTAMP '2026-08-10 08:05:00')
+) AS v(mandate_reference, instalment_number, presentment_reference, submitted_at)
+JOIN mandates m ON m.mandate_reference = v.mandate_reference
+JOIN instalments i ON i.mandate_id = m.mandate_id
+                  AND i.instalment_number = v.instalment_number;

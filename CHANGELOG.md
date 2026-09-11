@@ -35,3 +35,9 @@
 - Updated rebuild instructions to show portable PostgreSQL commands first.
 - Added a local Windows `psql.exe` example for machines where PostgreSQL is not on the system `PATH`.
 - Clarified the architecture rebuild workflow after resolving a merge conflict.
+
+## 2026-09-11 — AI-generated GUI
+
+- Added `python/report_gui.py` on `ai-generated/basic-report-gui`, explicitly labelled as AI-generated code.
+- Added three query buttons, a dynamic scrollable result table, background loading, error feedback and Excel Save As.
+- Kept the existing learning script and user SQL edits intact.
