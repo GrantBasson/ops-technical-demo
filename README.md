@@ -19,12 +19,15 @@ ops-technical-demo/
 |-- README.md
 |-- CHANGELOG.md
 |-- python/
+|   |-- report_gui.py
 |   |-- diagnostics.py
 |   |-- requirements.txt
 |-- sql/
 |   |-- schema.sql
 |   |-- sample_data.sql
-|   |-- diagnostic_queries.sql
+|   |-- investigate_presentments.sql
+|   |-- instalments_without_presentments.sql
+|   |-- outcomes_by_status.sql
 |-- docs/
     |-- architecture.md
 ```
@@ -37,7 +40,7 @@ Install PostgreSQL and make its command-line tools available on your PATH. Run t
 createdb ops_demo
 psql -v ON_ERROR_STOP=1 -d ops_demo -f sql/schema.sql
 psql -v ON_ERROR_STOP=1 -d ops_demo -f sql/sample_data.sql
-psql -v ON_ERROR_STOP=1 -d ops_demo -f sql/diagnostic_queries.sql
+psql -v ON_ERROR_STOP=1 -d ops_demo -f sql/investigate_presentments.sql
 ```
 
 Use a dedicated demo database: `schema.sql` drops and recreates the demo tables. All sample data is synthetic; this project should not be connected to production systems or real customer data.
@@ -60,14 +63,14 @@ For an existing project environment, skip the first command. In PyCharm, select 
 
 PostgreSQL must be running and the schema and sample data must already be loaded. The connection settings in `connect_to_database()` currently target `127.0.0.1:5432`, database `ops_demo`, user `postgres`, with a five-second connection timeout. Adjust these for your own local demo. The script supplies no password; authentication must be configured for that account, for example through PostgreSQL's password file. Do not put passwords in tracked source files.
 
-The report displays client name, mandate reference, amount and payment status. The count is presentments, not unique clients. It saves `investigations.xlsx` in the process working directory, which may differ between a terminal and a PyCharm run configuration. Running from the repository root saves it there. The `Investigations` worksheet contains four columns: Client, Mandate, Amount and Payment status. An empty result produces the no-investigations message and a workbook containing headings only.
+The console runner displays all columns returned by the selected query and saves them to `report.xlsx`, on a `Report` worksheet. Column headings come from the result dictionaries. The current selection in `main()` is `investigate_presentments.sql`; change the filename passed to `fetch_report()` to run another report. The workbook is saved in the process working directory, which can differ between PyCharm and terminal runs. Empty results display a message and skip export; any existing workbook is left unchanged.
 
 Each export overwrites the same filename. Close the workbook in Excel before rerunning. File-write errors are not currently handled with a custom message; database connection and query errors are reported with exit code 1. The connection is closed in `finally` after the query/report stage, including on failure.
 
 ## Planned Work
 
 - Extend the diagnostic SQL with further operations investigation scenarios.
-- Add environment setup and troubleshooting notes, with screenshots of completed work.
+- Add VM/RDP setup and further troubleshooting notes.
 
 These items are planned and are not implemented in the current repository. The current demonstration can run directly through SQL or through the Python report runner.
 
@@ -95,3 +98,27 @@ read-only connection per report, and closes it after fetching. Connection attemp
 have a five-second timeout and statements a fifteen-second timeout. Tkinter is
 included with standard Windows Python installations; no new pip dependency is
 required. Only the three explicitly listed report files can run from the GUI.
+
+## GUI screenshots
+
+These screenshots show the running AI-generated GUI with synthetic demo data.
+Wide reports have additional columns available through the horizontal scrollbar.
+Counts describe the captured sample data, not fixed report limits.
+
+### Ready to select a report
+
+![GUI ready to select a report](screenshots/gui-ready.png)
+
+### Presentments requiring investigation — 3 rows
+
+![Presentments requiring investigation](screenshots/gui-investigate-presentments.png)
+
+### Instalments without presentments — 5 rows
+
+![Instalments without presentments](screenshots/gui-instalments-without-presentments.png)
+
+### Outcomes by status — 6 statuses, 17 attempts
+
+![Outcomes grouped by presentment status](screenshots/gui-outcomes-by-status.png)
+
+The outcome totals represent attempted amounts, including retries, rather than unique instalment debt. Excel export is available through the GUI; these screenshots show report tables, not an exported workbook.

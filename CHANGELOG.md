@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-11 — GUI screenshots and documentation
+
+- Saved four user-provided GUI screenshots with descriptive filenames and added a README gallery.
+- Updated documentation for separate SQL reports, dynamic columns, current Excel export behaviour and the AI-generated GUI.
+- Documented captured results: 3 investigations, 5 unattempted instalments and 6 status groups covering 17 attempts.
+
+
 ## 2026-09-10
 
 ### Python diagnostics and Excel export

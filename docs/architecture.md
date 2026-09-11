@@ -103,18 +103,28 @@ If PostgreSQL is not on the system `PATH`, use the full path to `psql.exe`. For 
 & "C:\pg16\pgsql\bin\psql.exe" -h 127.0.0.1 -p 5432 -U postgres -d ops_demo -f .\sql\schema.sql
 ```
 
-## 7. Python Diagnostics and Excel Export
+## 7. Python Reports and Excel Export
 
-`python/diagnostics.py` implements this flow:
+The learning script `python/diagnostics.py` follows this flow:
 
 ```text
-main -> connect_to_database -> fetch_investigations -> display_report -> export_report
+main -> connect_to_database -> fetch_report -> display_report -> export_report
 ```
 
-`connect_to_database()` returns a Psycopg connection or reports an operational connection error and exits with code 1. `fetch_investigations(connection)` executes the investigation SELECT and returns dictionary rows, keyed by SQL column names and aliases. It closes its cursor after fetching. The SQL is currently embedded in the Python file rather than loaded from `sql/diagnostic_queries.sql`; changes to the investigation logic must be kept consistent in both places.
+`fetch_report(connection, filename)` reads a UTF-8 SQL file from the project sql directory, executes it and returns dictionary rows. Paths are resolved relative to the Python source file, independently of the working directory. Display and export derive their columns from the first result row. The console exports to `report.xlsx` with a `Report` worksheet; empty results skip export. Database errors produce messages and exit code 1, and `finally` closes the connection. File-read and export errors are not caught by the database handler.
 
-`display_report(results)` prints the row count and client, mandate, amount and payment outcome, or a message when no rows match. Multiple attempts for the same client remain separate rows. `export_report(results)` uses openpyxl to create an `Investigations` worksheet and save four report columns to `investigations.xlsx` in the working directory. It exports the same fetched results without running a second query. Empty results still produce column headings.
+## 8. AI-generated Desktop GUI
 
-`main()` catches Psycopg database errors during fetching/reporting and exits with code 1. Its `finally` block closes the connection, including when a query or export fails. Export filesystem errors are not caught by the database handler. The main guard starts the workflow only when the file is executed directly, so importing it makes the functions available without running the report.
+`python/report_gui.py` is the separately labelled AI-generated interface. Its explicit report mapping exposes three SQL files:
 
-The runner reads database records; it does not change them. Dependencies and PowerShell setup instructions are recorded in `python/requirements.txt` and the README. VM/RDP setup and additional operational diagnostics remain future work.
+| Button | SQL file | Captured result |
+|---|---|---|
+| Investigate presentments | `investigate_presentments.sql` | 3 attempts requiring investigation |
+| Instalments without presentments | `instalments_without_presentments.sql` | 5 instalments without attempts |
+| Outcomes by status | `outcomes_by_status.sql` | 6 statuses covering 17 attempts |
+
+A worker thread reads and executes the chosen query using a read-only connection. A queue passes results back to Tkinter's main thread, which populates a scrollable table. Column names come from cursor metadata, so even empty reports retain headings. Each report closes its database resources, uses a five-second connection timeout and a fifteen-second statement timeout, and clears stale results on failure.
+
+Excel Save As exports the fetched rows without querying again. It retains numeric values and exports headings for empty results. Report errors appear in the status area; export errors appear in a dialog. The original console script remains independent of the GUI.
+
+See the [README screenshot gallery](../README.md#gui-screenshots) for the initial screen and each report. These are user-provided captures of the running GUI using synthetic data. VM/RDP setup remains future work.
